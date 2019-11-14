@@ -8,24 +8,20 @@ import org.junit.Test;
 
 public class TestGameManager {
 
-    public GameManagerImpl gestor = null;
-
-    /**
-     * Singleton
-     */
+    public GameManagerImpl gestor = null; /** Singleton */
 
     private void afegirUsuaris() {
-        gestor.afegirUsuari("38383773X", "Alberto", "");
-        gestor.afegirUsuari("383837B", "Marc", "");
-        gestor.afegirUsuari("3838373T", "Andreu", "");
+        gestor.afegirUsuari("38383773X", "Alberto", "Machaca");
+        gestor.afegirUsuari("383837B", "Marc", "Tender");
+        gestor.afegirUsuari("3838373T", "David", "Adeu");
     }
 
     private void afegirObjectes() {
-        gestor.afegirObjecteUsuari(gestor.consultarInfoUsuari("38383773X"), new Objecte("Escut"));
-        gestor.afegirObjecteUsuari(gestor.consultarInfoUsuari("38383773X"), new Objecte("Cofre"));
-        gestor.afegirObjecteUsuari(gestor.consultarInfoUsuari("38383773X"), new Objecte("Espasa"));
-        gestor.afegirObjecteUsuari(gestor.consultarInfoUsuari("383837B"), new Objecte("Cofre"));
-        gestor.afegirObjecteUsuari(gestor.consultarInfoUsuari("383837B"), new Objecte("Espasa"));
+        gestor.afegirObjecteUsuari(gestor.getUsuari("38383773X"), new Objecte("Escut"));
+        gestor.afegirObjecteUsuari(gestor.getUsuari("38383773X"), new Objecte("Cofre"));
+        gestor.afegirObjecteUsuari(gestor.getUsuari("3838373T"), new Objecte("Espasa"));
+        gestor.afegirObjecteUsuari(gestor.getUsuari("383837B"), new Objecte("Cofre"));
+        gestor.afegirObjecteUsuari(gestor.getUsuari("383837B"), new Objecte("Espasa"));
     }
 
     @Before
@@ -41,20 +37,18 @@ public class TestGameManager {
     }
 
     @Test
-    public void testInicialitzador() {
+    public void testConsultarNombreUsuaris() {
         Assert.assertEquals("Nombre d'usuaris a llista.", 3, this.gestor.consultarNombreUsuaris());
     }
 
     @Test
     public void testVeureObjectesUsuari() {
-        gestor.veureObjectesUsuari(gestor.consultarInfoUsuari("38383773X"));
+        Assert.assertEquals("Nombre d'usuaris a llista.", "Espasa", this.gestor.veureObjectesUsuari(gestor.getUsuari("3838373T")).get(0).getId());
     }
 
     @Test
     public void testConsultarNombreObjectesUsuari() {
-        gestor.consultarNombreObjectesUsuari(gestor.consultarInfoUsuari("38383773X"));
-
-        Assert.assertEquals("Nombre d'usuaris a llista.", 3, this.gestor.consultarNombreObjectesUsuari(gestor.consultarInfoUsuari("38383773X")));
+        Assert.assertEquals("Nombre d'usuaris a llista.", 2, this.gestor.consultarNombreObjectesUsuari(gestor.consultarInfoUsuari("38383773X")));
     }
 
     @Test

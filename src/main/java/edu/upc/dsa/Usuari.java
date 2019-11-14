@@ -13,6 +13,7 @@ public class Usuari {
     public Usuari(String id, String name, String surname){
         this.id = id;
         this.nom=name;
+        this.surname = surname;
         this.objectes = new LinkedList<Objecte>();
     }
 

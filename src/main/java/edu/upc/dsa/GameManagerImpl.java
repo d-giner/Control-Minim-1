@@ -1,7 +1,6 @@
 package edu.upc.dsa;
 
 import java.util.*;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -17,29 +16,34 @@ public class GameManagerImpl implements GameManager{
 
     public Logger log = LogManager.getLogger(GameManagerImpl.class);
 
-    private List<Objecte> lObjectes = null; /** Llistat de productes */
-    private List<Usuari> lUAux = null; /** LLista estàndard d'usuaris */
+    private List<Objecte> lObjectes = null; /** Llistat d'objectes */
+    private List<Usuari> lUAux = null; /** LLista estàndard d'usuaris per a consultes alternatives */
     private HashMap<String, Usuari> lUsuaris = null;  /** HashMap d'usuaris */
 
 
     private GameManagerImpl() {
-        lObjectes = new ArrayList<Objecte>(); /** Llistat de productes */
-        lUsuaris = new HashMap<String, Usuari>(); /** Llistat d'usuaris */
-        lUAux = new ArrayList<>();
+        lObjectes = new ArrayList<Objecte>();
+        lUsuaris = new HashMap<String, Usuari>();
+        lUAux = new LinkedList<>();
     }
 
     public void clear() {
         lObjectes.clear();
         lUsuaris.clear();
+        lUAux.clear();
     }
 
-    public void afegirUsuari(String id, String name, String surname) {
+    public List<Usuari> obtenirLlistaUsuaris(){ /** Per a Api rest */
+        return this.lUAux;
+    }
+
+    public void afegirUsuari(String id, String name, String surname) { /** Afegir un nou usuari */
         this.lUsuaris.put(id, new Usuari(id, name, surname));
         this.lUAux.add(new Usuari(id, name, surname));
         log.info("Usuari afegit correctament.");
     }
 
-    public Usuari consultarInfoUsuari(String id){
+    public Usuari consultarInfoUsuari(String id){ /** Obtenir informació d'un usuari */
         Usuari u = lUsuaris.get(id);
         if(u != null){
             log.info("Usuari: " + u.getId() + ", Nom: " + u.getNom() + " i surname: " + u.getSurname());
@@ -50,8 +54,16 @@ public class GameManagerImpl implements GameManager{
         return u;
     }
 
+    public Usuari getUsuari(String id){ /** Obtenir un usuari */
+        Usuari u = lUsuaris.get(id);
+        if(u == null){
+            log.error("L'usuari amb aquest id no existeix.");
+        }
+            return u;
+    }
 
-    public void modificarUsuari(String id, String name, String surname) {
+
+    public Usuari modificarUsuari(String id, String name, String surname) { /** Modificar les dades dels usuaris */
         Usuari u = lUsuaris.get(id);
         if(u != null){
             u.setNom(name);
@@ -61,11 +73,17 @@ public class GameManagerImpl implements GameManager{
         else{
             log.error("L'usuari amb aquest id no existeix.");
         }
+        return u;
     }
 
-    public void afegirObjecteUsuari(Usuari u, Objecte obj) {
-        u.addObjecte(obj);
-
+    public void afegirObjecteUsuari(Usuari u, Objecte obj) { /** Afegir objectes als usuaris*/
+        if(u != null) {
+            u.addObjecte(obj);
+            log.info("L'objecte: " + obj.getId() + " ha estat afegit a l'inventari de l'usuari: " + u.getNom());
+        }
+        else{
+            log.error("L'usuari amb aquest id no existeix.");
+        }
     }
 
     public int consultarNombreUsuaris(){ /** Consultar el nombre d'usuaris que hi ha registrats. */
@@ -84,7 +102,7 @@ public class GameManagerImpl implements GameManager{
 
     public int consultarNombreObjectesUsuari(Usuari u) { /** Rebem el nombre d'objectes que té un usuari */
         if(u.getNumObjects() > 0){
-            log.info("Nombre d'objectes: " + u.getNumObjects());
+            log.info("L'usuari: " + u.getNom() + " té " + u.getNumObjects() + " objectes al seu inventari.");
         }
         else{
             log.error("Aquest usuari no té cap objecte.");
@@ -92,7 +110,7 @@ public class GameManagerImpl implements GameManager{
     return u.getNumObjects();
     }
 
-    public List<Usuari> ordenarUsuarisAlfabeticament(){
+    public List<Usuari> ordenarUsuarisAlfabeticament(){ /** Ordenem el nom dels usuaris alfabéticament */
         List<Usuari> lAux = new ArrayList<Usuari>();
         lAux.addAll(lUAux);
 
@@ -103,6 +121,11 @@ public class GameManagerImpl implements GameManager{
                     return object1.getNom().compareTo(object2.getNom());
                 }
             });
+        }
+        log.info("Noms ordenats alfabétiacament: " + lAux);
+        log.info("Noms desxifrats: ");
+        for (Usuari u : lAux){
+            log.info("Nom: " + u.getNom());
         }
         return lAux;
     }
